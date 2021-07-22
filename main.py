@@ -5,11 +5,14 @@ from config import *
 
 class BiliBot:
     def checking_at(self):
-        result = requests.get(url=checking_at_url, headers=headers)
-        data_json = result.json()
-        if data_json['code'] == 0:
-            return data_json['data']['at']
-        return 0
+        try:
+            result = requests.get(url=checking_at_url, headers=headers)
+            data_json = result.json()
+            if data_json['code'] == 0:
+                return data_json['data']['at']
+            return 0
+        except Exception:
+            return 0
 
     def get_at_data(self):
         result = requests.get(url=get_at_url, headers=headers)
@@ -20,10 +23,14 @@ class BiliBot:
     def reply(self, oid, type, root, parent, message, ater, plat=1):
         reply_data = {"oid": oid, "type": type, "root": root, "parent": parent, "message": message, "plat": plat,
                       "csrf": csrf}
-        result = requests.post(url=reply_url, headers=headers, data=reply_data)
+        result = requests.post(url=reply_url, headers=sender_headers, data=reply_data)
         data_json = result.json()
         if data_json['code'] == 0:
             print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "评论发送成功！")
+            if code := self.send_msg(ater, message)['code'] == 0:
+                print("私信发送:{}成功！".format(ater))
+            else:
+                print(code)
         else:
             message = "评论发送失败自动转为私信\n" + message
             if code := self.send_msg(ater, message)['code'] == 0:
@@ -43,7 +50,7 @@ class BiliBot:
                         for j in i['replies']:
                             if j['rpid'] == root:
                                 return j['mid'], j['member']['uname']
-                    except Exception:
+                    except Exception :
                         continue
 
     def get_common(self, uid, name):
@@ -66,9 +73,11 @@ class BiliBot:
         first_line = '粉丝牌：\n'
         medal_wall = str()
         if data_json['code'] == 0 and data_json['data']['list']:
-            for i in data_json['data']['list']:
-                medal_wall = medal_wall + i['medal_info']['medal_name']+str(i['medal_info']['level'])+'级'+'\t{}\n'.format(i['target_name'])
-            return first_line+medal_wall[:-1]
+            num = 10 if len(data_json['data']['list']) > 10 else len(data_json['data']['list'])
+            for i in range(num):
+                medal_wall = medal_wall + data_json['data']['list'][i]['medal_info']['medal_name'] + str(
+                    data_json['data']['list'][i]['medal_info']['level']) + '级' + '\t{}\n'.format(data_json['data']['list'][i]['target_name'])
+            return first_line + medal_wall[:-1]
         else:
             return '此人粉丝牌墙未打开。'
 
@@ -85,7 +94,7 @@ class BiliBot:
             "csrf_token": csrf,
             "csrf": csrf
         }
-        result = requests.post(url=send_msg_url, headers=headers, data=data)
+        result = requests.post(url=send_msg_url, headers=sender_headers, data=data)
         data_json = result.json()
         return data_json
 

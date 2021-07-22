@@ -1,9 +1,19 @@
 headers = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                  'Chrome/91.0.4472.164 '
+                  'Safari/537.36',
+    "Cookie": ""
+}
+
+sender_headers = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                  'Chrome/91.0.4472.164 '
+                  'Safari/537.36',
     "Cookie": ""
 }
 self_uid = 0
 csrf = str()
-for i in headers['Cookie'].split(';'):
+for i in sender_headers['Cookie'].split(';'):
     if 'bili_jct' in i:
         csrf = i.split('=')[1]
 
