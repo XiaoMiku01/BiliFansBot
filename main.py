@@ -50,7 +50,7 @@ class BiliBot:
                         for j in i['replies']:
                             if j['rpid'] == root:
                                 return j['mid'], j['member']['uname']
-                    except Exception :
+                    except Exception:
                         continue
 
     def get_common(self, uid, name):
@@ -76,7 +76,8 @@ class BiliBot:
             num = 10 if len(data_json['data']['list']) > 10 else len(data_json['data']['list'])
             for i in range(num):
                 medal_wall = medal_wall + data_json['data']['list'][i]['medal_info']['medal_name'] + str(
-                    data_json['data']['list'][i]['medal_info']['level']) + '级' + '\t{}\n'.format(data_json['data']['list'][i]['target_name'])
+                    data_json['data']['list'][i]['medal_info']['level']) + '级' + '\t{}\n'.format(
+                    data_json['data']['list'][i]['target_name'])
             return first_line + medal_wall[:-1]
         else:
             return '此人粉丝牌墙未打开。'
@@ -114,13 +115,14 @@ class BiliBot:
                         nickname = "回复 @{} :".format(at_data[i]["user"]["nickname"])
                         ater_id = at_data[i]["user"]["mid"]
                         time_str = "\n查询时间：" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+                        end_str = '\n数据来源：https://b23.tv/SgRBMG'
                         if root != 0:
                             print("查：" + str(s := self.get_uid(root, oid, type)))
                             uid, name = s
                             if ater_id != uid:
                                 message = self.get_common(uid, name) + '\n' + self.get_medal(uid)
                                 print(message)
-                                self.reply(oid, type, root, parent, nickname + message + time_str, ater_id)
+                                self.reply(oid, type, root, parent, nickname + message + time_str + end_str, ater_id)
                             else:
                                 continue
                         time.sleep(5)
